@@ -1,0 +1,12 @@
+[core]
+	bare = true
+	repositoryformatversion = 0
+	filemode = false
+	symlinks = false
+	ignorecase = true
+[remote]
+	pushdefault = julystone
+[remote "julystone"]
+	url = https://github.com/julystone
+	fetch = +refs/heads/*:refs/remotes/julystone/*
+	pushurl = https://github.com/julystone

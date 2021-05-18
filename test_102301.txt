@@ -1,0 +1,297 @@
+{
+    "Data": {
+        "SCTimeDelay": 0,
+        "SCUpdateTime": "20210311100316",
+        "SettingsConfig": {
+            "CoverAllSetting": {
+                "Future": true,
+                "Option": false
+            },
+            "DeepQuoteGreenRedColor": true,
+            "DefaultExceed": {},
+            "DefaultLots": {},
+            "DefaultPriceType": 7,
+            "DrawOrderPriceType": 5,
+            "IndexConfiguration": {
+                "MorphologicalIndex": {
+                    "BBI": false,
+                    "BBIBOLL": false,
+                    "BOLL": true,
+                    "CDP": false,
+                    "DKX": false,
+                    "EMA": false,
+                    "EMA2": false,
+                    "HCL": false,
+                    "MA": false,
+                    "MIKE": false,
+                    "PUBU": true,
+                    "SAR": true,
+                    "SMA": true,
+                    "SP": false
+                },
+                "SwingIndex": {
+                    "ARBR": false,
+                    "ATR": false,
+                    "BIAS": true,
+                    "CCI": true,
+                    "CR": false,
+                    "DDI": false,
+                    "DMA": false,
+                    "DMI": true,
+                    "KD": false,
+                    "KDJ": true,
+                    "MACD": true,
+                    "MTM": true,
+                    "PSY": true,
+                    "ROC": false,
+                    "RSI": true,
+                    "SLOWKD": false,
+                    "TRIX": false,
+                    "WR": true
+                },
+                "TurnoverIndex": {
+                    "CCL": false,
+                    "CJL": true,
+                    "MV": false,
+                    "OBV": false
+                }
+            },
+            "IndexParameter": {
+                "ARBR": {
+                    "N": 26
+                },
+                "ATR": {
+                    "N": 26
+                },
+                "BBI": {
+                    "N1": 3,
+                    "N2": 6,
+                    "N3": 12,
+                    "N4": 24
+                },
+                "BBIBOLL": {
+                    "M": 3,
+                    "N": 10
+                },
+                "BIAS": {
+                    "N1": 6,
+                    "N2": 12,
+                    "N3": 24
+                },
+                "BOLL": {
+                    "N": 26,
+                    "P": 2
+                },
+                "CCI": {
+                    "N": 14
+                },
+                "CDP": {
+                    "N": 3
+                },
+                "CR": {
+                    "M1": 5,
+                    "M2": 10,
+                    "M3": 20,
+                    "M4": 40,
+                    "N": 26
+                },
+                "DDI": {
+                    "M": 10,
+                    "M1": 5,
+                    "N": 13,
+                    "N1": 30
+                },
+                "DKX": {
+                    "M": 10
+                },
+                "DMA": {
+                    "LONG": 50,
+                    "M": 10,
+                    "SHORT": 10
+                },
+                "DMI": {
+                    "M": 6,
+                    "N": 14
+                },
+                "EMA": {
+                    "MA1": 5,
+                    "MA2": 10,
+                    "MA3": 20,
+                    "MA4": 0,
+                    "MA5": 0,
+                    "MA6": 0,
+                    "MA7": 0,
+                    "MA8": 0
+                },
+                "EMA2": {
+                    "MA1": 5,
+                    "MA2": 10,
+                    "MA3": 20,
+                    "MA4": 0,
+                    "MA5": 0,
+                    "MA6": 0,
+                    "MA7": 0,
+                    "MA8": 0
+                },
+                "HCL": {
+                    "N": 10
+                },
+                "KD": {
+                    "M1": 3,
+                    "M2": 3,
+                    "N": 9
+                },
+                "KDJ": {
+                    "M1": 3,
+                    "M2": 3,
+                    "N": 9
+                },
+                "MA": {
+                    "MA1": 5,
+                    "MA2": 10,
+                    "MA3": 20,
+                    "MA4": 0,
+                    "MA5": 0,
+                    "MA6": 0,
+                    "MA7": 0,
+                    "MA8": 0
+                },
+                "MACD": {
+                    "Long": 26,
+                    "M": 9,
+                    "Short": 12
+                },
+                "MIKE": {
+                    "N": 12
+                },
+                "MTM": {
+                    "P": 6,
+                    "W": 6
+                },
+                "MV": {
+                    "M": 20,
+                    "N": 10
+                },
+                "PSY": {
+                    "M": 6,
+                    "N": 12
+                },
+                "PUBU": {
+                    "M1": 4,
+                    "M2": 6,
+                    "M3": 9,
+                    "M4": 13,
+                    "M5": 18,
+                    "M6": 24
+                },
+                "ROC": {
+                    "M": 20,
+                    "N": 24
+                },
+                "RSI": {
+                    "N1": 7,
+                    "N2": 14,
+                    "N3": 21
+                },
+                "SAR": {
+                    "Limit": 20,
+                    "Step": 2
+                },
+                "SLOWKD": {
+                    "M1": 3,
+                    "M2": 3,
+                    "M3": 3,
+                    "N": 9
+                },
+                "SMA": {
+                    "MA1": 5,
+                    "MA2": 10,
+                    "MA3": 20,
+                    "MA4": 0,
+                    "MA5": 0,
+                    "MA6": 0,
+                    "MA7": 0,
+                    "MA8": 0
+                },
+                "TRIX": {
+                    "N": 20,
+                    "P": 12
+                },
+                "WR": {
+                    "N": 14
+                }
+            },
+            "IsCacheCodeTable": true,
+            "IsClickPriceConfirm": false,
+            "IsDeepQuoteProportionBar": false,
+            "IsDisconnectSound": false,
+            "IsDivideOrder": false,
+            "IsDrawLine": false,
+            "IsFirstCoverToday": true,
+            "IsHedge": false,
+            "IsKeepScreenOn": false,
+            "IsLastPriceLine": false,
+            "IsMessageShake": false,
+            "IsMessageSound": false,
+            "IsOrderConfirm": false,
+            "IsPositionAverageLine": false,
+            "IsQuoteSingle": false,
+            "IsReverseConfirm": false,
+            "IsTradeLinkage": true,
+            "IsTradeSound": true,
+            "Language": 2,
+            "MarketOrderCFFEXSetting": true,
+            "MarketOrderSetting": true,
+            "PeriodSetting": [
+                {
+                    "Type": "D",
+                    "Value": 1
+                },
+                {
+                    "Type": "M",
+                    "Value": 1
+                },
+                {
+                    "Type": "M",
+                    "Value": 15
+                },
+                {
+                    "Type": "H",
+                    "Value": 1
+                },
+                {
+                    "Type": "W",
+                    "Value": 1
+                },
+                {
+                    "Type": "O",
+                    "Value": 1
+                }
+            ],
+            "PriceCalculateType": 2,
+            "QuoteExchangeList": {
+                "CBOTDELAY": false,
+                "COMEXDELAY": false,
+                "EURONEXT": false,
+                "FOREX": false,
+                "HKEXDELAY": false,
+                "KRX": false,
+                "SGX": false,
+                "SGXDELAY": false,
+                "SZSE": false,
+                "TAIFEX": false
+            },
+            "ReversePriceType": 4,
+            "TextSize": 1,
+            "TradeInterfaceStyle": {
+                "FundBarStyle": false,
+                "QuoteStyle": false
+            }
+        },
+        "Source": 1,
+        "UserNo": "JULY401"
+    },
+    "ErrorCode": 0,
+    "ErrorText": "³É¹¦",
+    "Total": 1
+}
