@@ -10,7 +10,8 @@ class B:
 
 class C(A, B):
     def __init__(self):
-        super().__init__()
+        A.__init__(self)
+        B.__init__(self)
 
 
 class D(C):
@@ -18,4 +19,5 @@ class D(C):
         super().__init__()
 
 
+C()
 D()
