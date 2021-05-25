@@ -39,13 +39,13 @@ class EstarPost:
         res = HttpRequestNoCookie.request(method=self.method, url=self.url, json=self.data, headers=self.h)
         out = json.dumps(json.loads(res), sort_keys=False, indent=4, ensure_ascii=False)
         print(out)
-        with open(f'./tempFiles/test_{datetime.now().strftime("%H%M%S")}.txt', mode='w+') as f:
+        with open(f'./tempFiles/F10_{datetime.now().strftime("%H%M%S")}.txt', mode='w+') as f:
             f.write(out)
 
 
 if __name__ == '__main__':
     data = {
-        "Commodity": "ZCE|O|CF",
+        "Commodity": "ZCE|O|SR",
         "Language": 2052,
     }
 

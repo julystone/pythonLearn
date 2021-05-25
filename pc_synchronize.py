@@ -47,5 +47,5 @@ if __name__ == '__main__':
     res = HttpRequestNoCookie.request(method=method, url=url, json=data, headers=h)
     out = json.dumps(json.loads(res), sort_keys=True, indent=4, ensure_ascii=False)
     # with open(f'./test_{datetime.now()}.txt', mode='w+') as f:
-    with open(f'./test_{datetime.now().strftime("%H%M%S")}.txt', mode='w+') as f:
+    with open(f'./tempFiles/Sync_{datetime.now().strftime("%H%M%S")}.txt', mode='w+') as f:
         f.write(out)
