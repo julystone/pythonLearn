@@ -25,7 +25,7 @@ class HttpRequestNoCookie:
 
 
 data = {
-    "userNo": "JULY401",
+    "userNo": "ESTEST015",
     "source": 1,
     "dataType": 2
 }
@@ -39,13 +39,14 @@ h = {
     'Cookie': "*",
 }
 
-url = 'http://news.epolestar.xyz/flask/terminal/server/'
+url = 'https://news.epolestar.xyz/flask/terminal/server/'
 
 method = 'POST'
 
 if __name__ == '__main__':
     res = HttpRequestNoCookie.request(method=method, url=url, json=data, headers=h)
     out = json.dumps(json.loads(res), sort_keys=True, indent=4, ensure_ascii=False)
+    # print(out)
     # with open(f'./test_{datetime.now()}.txt', mode='w+') as f:
     with open(f'./tempFiles/Sync_{datetime.now().strftime("%H%M%S")}.txt', mode='w+') as f:
         f.write(out)

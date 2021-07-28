@@ -28,5 +28,5 @@ cmd_str = f'adb -s {serial} shell monkey ' \
           f'--pct-anyevent 0 ' \
           f'1000'
 # os.system(f"adb shell input swipe {params[0]} {params[1]} {params[2]} {params[3]} {duration}")
-for _ in range(1):
+for _ in range(5):
     output = os.system(cmd_str)

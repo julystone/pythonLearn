@@ -7,7 +7,7 @@ from requests.sessions import Session
 
 
 
-url = 'http://news.epolestar.xyz/'
+url = 'http://47.101.65.61/zentao/'
 
 my_session = Session()
 
@@ -16,18 +16,18 @@ end_page = 1672
 
 
 def get_csrf():
-    temp = my_session.get(url + 'login/', timeout=5)
+    temp = my_session.get(url + 'user-login', timeout=5)
     csrf = re.search("csrftoken=(.*) for", str(temp.cookies)).group(1)
     return csrf
 
 
-# data = {"userid": "july", "password": "Es123456", "csrfmiddlewaretoken": get_csrf()}
-data = {"userid": "july", "password": "Es123456"}
+# data = {"userid": "july", "password": "wscxz712718", "csrfmiddlewaretoken": get_csrf()}
+data = {"userid": "july", "password": "wscxz712718"}
 
 my_session.post(url, data=data, timeout=5)
 line = 2
 start = datetime.datetime.now()
-url_new = url + f'home/feedbackDetailInfo?id=60ac9db901966b3e69faf882'
+url_new = url + f'bug-view-7032'
 res = my_session.get(url_new, timeout=5)
 html = res.text
 html = etree.HTML(html)
