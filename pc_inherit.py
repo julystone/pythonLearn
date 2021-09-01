@@ -1,23 +1,16 @@
 class A:
-    def __init__(self):
-        print('A')
+    def aaa(self):
+        print(123)
 
 
-class B:
-    def __init__(self):
-        print('B')
+class B(A):
+    pass
 
 
-class C(A, B):
-    def __init__(self):
-        A.__init__(self)
-        B.__init__(self)
+class C(B):
+    pass
 
 
-class D(C):
-    def __init__(self):
-        super().__init__()
-
-
-C()
-D()
+if __name__ == '__main__':
+    c = C()
+    c.aaa()
