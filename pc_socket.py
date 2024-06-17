@@ -1,45 +1,26 @@
-import multiprocessing
-import socket
-import time
+import random
+import string
+from datetime import datetime
+from typing import Tuple
 
 
-def first():
-    s = socket.socket()
-    print("this is socket")
-    print("等待连接")
-    host = socket.gethostname()
-    port = 12345
-    s.bind((host, port))
-    s.listen(5)
+def create_captcha() -> str:
+    # 1. 随机生成10位的字符串（包含大小写字母和数字）
+    captcha_chars = string.ascii_letters + string.digits  # 包含大小写字母和数字的字符集
+    captcha = ''.join(random.choices(captcha_chars, k=10))
 
-    while True:
-        c, addr = s.accept()  # c是新的socket
-        print(addr)
-        sb = bytes("hello to socket,欢迎连接到服务器", encoding="utf-8")
-        c.send(sb)
-        c.close()
+    # 2. 获取当前时间并格式化为字符串
+    now = datetime.now()
+    time_str = now.strftime("%Y%m%d%H%M%S")
 
+    # 3. 计算基于验证码和时间戳的某种值（这里简化为验证码字符的ASCII码之和）
+    # 注意：这里不直接使用时间字符串的字符作为索引，因为长度可能不匹配
+    sum_value = sum(ord(char) for char in captcha)  # 累加验证码字符的ASCII码
+    sum_str = str(sum_value)[-3:].zfill(3)  # 取最后三位，不足则补零
 
-def second():
-    s = socket.socket()
-    host = socket.gethostname()
-    port = 12345
-
-    s.connect((host, port))
-    # print(type(s.recv(1024)))
-    # 必须支持中文
-    print("客户端：让我连到服务器")
-    # print(str(s.recv(1024), encoding="utf8"))
-    s.close()
+    # 返回完整的验证码字符串
+    return captcha + time_str + sum_str
 
 
-if __name__ == '__main__':
-    server = multiprocessing.Process(target=first, args=())
-    server.start()
-    time.sleep(3)
-    client = multiprocessing.Process(target=second, args=())
-    client.start()
-    client1 = multiprocessing.Process(target=second, args=())
-    client1.start()
-    client2 = multiprocessing.Process(target=second, args=())
-    client2.start()
+# 调用函数并打印结果
+print(create_captcha())

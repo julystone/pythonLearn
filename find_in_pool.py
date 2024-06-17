@@ -18,8 +18,6 @@ def level_teller(target):
     res = target.split('/')[1:]
     return res
 
-def pool_gen(file):
-
 
 if __name__ == '__main__':
     level_teller(st2)
