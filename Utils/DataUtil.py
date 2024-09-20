@@ -34,7 +34,7 @@ class ReadExcel(object):
     读取excel数据
     """
 
-    def __init__(self, file_name, sheet_name):
+    def __init__(self, file_name, sheet_name=None, if_new_column=None):
         """
         这个是用例初始化读取对象的
         :param file_name:  文件名字  -->  str
@@ -42,8 +42,15 @@ class ReadExcel(object):
         """
 
         # 先将多余的行列预处理删除掉
+        self.if_new_column = if_new_column
         self.wb = openpyxl.load_workbook(file_name)
-        self.sheet = self.wb[sheet_name]
+        self.wb: openpyxl.Workbook
+        self.sheet_list = self.wb.sheetnames
+        if sheet_name is None:
+            self.sheet_name = self.sheet_list[0]
+        else:
+            self.sheet_name = sheet_name
+        self.sheet = self.wb[self.sheet_name]
         self.max_row = self.sheet.max_row
         self.max_column = self.sheet.max_column
         for row in list(self.sheet.rows)[::-1]:
@@ -53,7 +60,6 @@ class ReadExcel(object):
             if column[0].value is None:
                 self.sheet.delete_cols(column[0].column, 1)
         self.file_name = file_name
-        self.sheet_name = sheet_name
 
         self.save()
         self.close()
@@ -110,12 +116,14 @@ class ReadExcel(object):
             cases.append(case_data)
         return cases
 
-    def read_data_obj(self):
+    def read_data_obj(self, sheet=None):
         """
         按行读取数据，表单所有数据
         每个用例存储在一个对象中
         :return: 返回一个列表，列表中每个元素为一个用例对象
         """
+        if sheet is not None:
+            self.sheet_name = sheet
         self.open()
         # 按行获取数据转换成列表
         rows_data = list(self.sheet.rows)
@@ -125,8 +133,9 @@ class ReadExcel(object):
             titles.append(title.value)
         titles.append("max_column")
         # 定义一个空列表用来存储所有的用例
-        if 'result' not in titles:
-            self.w_data(1, self.r_max()[1] + 1, 'result')
+        if self.if_new_column is not None:
+            if self.if_new_column not in titles:
+                self.w_data(1, self.r_max()[1] + 1, self.if_new_column)
         cases = []
         for case in rows_data[1:]:
             # 创建一个Cases类的对象，用来保存用例数据，
@@ -140,7 +149,7 @@ class ReadExcel(object):
             # 将该条数据放入cases中
             case_data = list(zip(titles, data))
             for i in case_data:
-                if i[0] == 'result' or i[0] is None:
+                if i[0] == self.if_new_column or i[0] is None:
                     continue
                 setattr(case_obj, i[0], i[1])
             setattr(case_obj, 'row', case[0].row)

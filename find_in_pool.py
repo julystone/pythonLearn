@@ -20,4 +20,4 @@ def level_teller(target):
 
 
 if __name__ == '__main__':
-    level_teller(st2)
+    print(level_teller(st2))

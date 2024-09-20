@@ -7,3 +7,5 @@ refs
 test_*.txt
 .idea
 tempFiles
+CVMfiles_pc/
+SearchWords/
