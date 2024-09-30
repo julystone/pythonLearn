@@ -27,6 +27,10 @@ class HttpRequestNoCookie:
 
 
 class Synchronize:
+    ParamDict = {"source": {1: "App", 2: "PC"},
+                 "dataType": {1: "Self", 2: "Setting"},
+                 "device": {1: "And", 2: "iOS", 3: "EsX"}}
+
     def __init__(self, userNo, source, dataType, device):
         self.userNo = userNo
         self.source = source
@@ -34,9 +38,9 @@ class Synchronize:
         self.captcha, self.time_str = self.create_captcha()
 
         # self.data_str = "Self" if dataType == 1 else "Setting"
-        self.data_str = ParamDict["dataType"][dataType]
+        self.data_str = self.ParamDict["dataType"][dataType]
         # self.device_str = "And" if device == 1 else "iOS"
-        self.device_str = ParamDict["device"][device]
+        self.device_str = self.ParamDict["device"][device]
         self.res = None
         self.out = None
         self.get_res()
@@ -107,22 +111,17 @@ class Synchronize:
         self.out = json.dumps(ok, sort_keys=True, indent=4, ensure_ascii=False)
 
     def write_file(self):
-        with open(f'./tempFiles/{self.time_str[4:]}_{self.userNo}_{self.device_str}_{self.data_str}.txt',
+        with open(f'./tempFiles/{self.time_str[4:]}_{self.userNo}_{self.device_str}_{self.data_str}.json',
                   mode='w+') as f:
             f.write(self.out)
 
 
-ParamDict = {"source": {1: "App", 2: "PC"},
-             "dataType": {1: "Self", 2: "Setting"},
-             "device": {1: "And", 2: "iOS", 3: "EsX"}}
-
 if __name__ == '__main__':
-
     userNo = "ESTEST015"
-    source = 1      # 1:App, 2:PC
-    dataType = 2    # 1:Self,2:Setting
+    source = 1  # 1:App, 2:PC
+    dataType = 2  # 1:Self,2:Setting
 
-    device = 2      # 1:And, 2:iOS, 3:EsX
+    device = 1  # 1:And, 2:iOS, 3:EsX
 
     out = Synchronize(userNo, source, dataType, device)
     out.common_get()

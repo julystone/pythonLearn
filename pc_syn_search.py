@@ -9,6 +9,7 @@ import aiohttp
 import requests
 from Utils import DataUtil
 
+
 class HttpRequestNoCookie:
     def __init__(self):
         pass
@@ -27,6 +28,7 @@ class HttpRequestNoCookie:
         if res.status_code == 404:
             raise RuntimeError
         return res.text
+
 
 class Search:
     def __init__(self, word):
@@ -74,10 +76,11 @@ def worker():
         print(f"{single.id} search for {single.key0} Took {execution_time}, size = {result_size}")
         write_data_list.append((result_size, execution_time, search_result))
     for i in OBJ.read_data_obj():
-        OBJ.w_data_origin(row=i.row, column=3 + k*4, data=write_data_list[i.row-2][0])
-        OBJ.w_data_origin(row=i.row, column=4 + k*4, data=write_data_list[i.row-2][1])
-        OBJ.w_data_origin(row=i.row, column=5 + k*4, data=write_data_list[i.row-2][2])
+        OBJ.w_data_origin(row=i.row, column=3 + k * 4, data=write_data_list[i.row - 2][0])
+        OBJ.w_data_origin(row=i.row, column=4 + k * 4, data=write_data_list[i.row - 2][1])
+        OBJ.w_data_origin(row=i.row, column=5 + k * 4, data=write_data_list[i.row - 2][2])
     OBJ.save()
+
 
 def perform_stress_test(queries, num_threads):
     results = []
