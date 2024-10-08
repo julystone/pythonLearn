@@ -111,9 +111,15 @@ class Synchronize:
         self.out = json.dumps(ok, sort_keys=True, indent=4, ensure_ascii=False)
 
     def write_file(self):
-        with open(f'./tempFiles/{self.time_str[4:]}_{self.userNo}_{self.device_str}_{self.data_str}.json',
-                  mode='w+') as f:
+        with open(f'./tempFiles/{self.name_format}', mode='w+') as f:
             f.write(self.out)
+
+    def file_bytes(self):
+        return self.out.encode()
+
+    @property
+    def name_format(self):
+        return f"{self.time_str[4:]}_{self.userNo}_{self.device_str}_{self.data_str}.json"
 
 
 if __name__ == '__main__':

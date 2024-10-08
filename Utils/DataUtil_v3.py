@@ -5,7 +5,7 @@
 """
 import re
 import time
-from typing import Any, Annotated
+from typing import Any
 from pydantic import BaseModel, ConfigDict
 
 import openpyxl
@@ -70,8 +70,16 @@ class ReadExcel(object):
     def selected_sheet(self):
         return self.wb[self.sheet_name]
 
+    @selected_sheet.setter
+    def selected_sheet(self, sheet_name):
+        if sheet_name not in self.sheet_lists:
+            print("表单不存在")
+        self.sheet_name = sheet_name
+        self.Sheet.selected_sheet = self.wb[sheet_name]
+        self.Sheet.max_row, self.Sheet.max_column = self.max_row_column
+
     @property
-    def get_max_rc(self):
+    def max_row_column(self):
         return self.Sheet.selected_sheet.max_row, self.Sheet.selected_sheet.max_column
 
     @property
@@ -103,13 +111,6 @@ class ReadExcel(object):
     def w_data_char(self, string, data):
         self.w_data_origin(*self.get_row_column(string), data)
 
-    def switch_sheet(self, sheet_name):
-        if sheet_name not in self.sheet_lists:
-            return "没有该sheet"
-        self.sheet_name = sheet_name
-        self.Sheet.selected_sheet = self.wb[sheet_name]
-        self.Sheet.max_row, self.Sheet.max_column = self.get_max_rc
-
     def get_row_column(self, string):
         char, row = self.split_letter_and_number(string)
         column = 0
@@ -127,7 +128,7 @@ class ReadExcel(object):
         :return: 返回一个列表，列表中每个元素为一个用例对象
         """
         if sheet is not None:
-            self.switch_sheet(sheet)
+            self.selected_sheet = sheet
         # 按行获取数据转换成列表
         rows_data = list(self.Sheet.selected_sheet.rows)
         # 获取表单的表头信息
@@ -154,7 +155,7 @@ class ReadExcel(object):
             for i in case_data:
                 if i[0] == self.if_new_column or i[0] is None:
                     continue
-                setattr(case_obj, i[0], i[1])
+                setattr(case_obj, str(i[0]), i[1])
             setattr(case_obj, 'row', case[0].row)
             cases.append(case_obj)
 
@@ -164,11 +165,11 @@ class ReadExcel(object):
 if __name__ == '__main__':
     r = ReadExcel("../SearchWords/SearchWords_v3.xlsx", sheet_name="July")
     time.sleep(2)
-    r.switch_sheet(sheet_name="Sheet1")
-    print(r.Sheet)
-    print(r.latest_column_char)
-    print(r.latest_row_num)
-    res = r.get_row_column('ZZ100')
-    print(res)
-    # print(r.read_data_obj())
-    # r.save()
+    r.selected_sheet = "Sheet1"
+    # print(r.Sheet)
+    # print(r.latest_column_char)
+    # print(r.latest_row_num)
+    # res = r.get_row_column('ZZ100')
+    # print(res)
+    print(r.read_data_obj())
+    r.save()
