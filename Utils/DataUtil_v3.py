@@ -9,12 +9,6 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict
 
 import openpyxl
-from openpyxl.styles import Font
-
-
-# @dataclass
-# class Case:
-#     pass
 
 
 class Case:
@@ -31,6 +25,53 @@ class SheetFoo(BaseModel):
     max_column: int
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+def csv2excel(csv_path):
+    """
+    将csv文件转换为excel文件
+    :param csv_path:
+    :return:
+    """
+    import csv
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            ws.append(row)
+
+    wb.save('output.xlsx')
+
+
+def split_letter_and_number(s):
+    """
+    将字母和数字组合的字符串拆分成行和列
+    :param s: "B12"
+    :return: letter, number eg: B, 12
+    """
+    pattern = r'(\D+)(\d+)'
+    match = re.match(pattern, s)
+    if match:
+        letter = match.group(1)  # 捕获组1：字母部分
+        number = match.group(2)  # 捕获组2：数字部分
+        return letter, number
+    else:
+        return None, None
+
+
+def get_row_column(string):
+    """
+    将字母和数字组合的字符串拆分成行和列
+    :param string: “B12”
+    :return: row, column eg: 12, 2
+    """
+    char, row = split_letter_and_number(string)
+    column = 0
+    for index, letter in enumerate(char[::-1]):
+        offset = ord(letter.upper()) - ord('A') + 1
+        column += offset * pow(26, index)
+    return int(row), column
 
 
 class ReadExcel(object):
@@ -90,33 +131,17 @@ class ReadExcel(object):
     def latest_row_num(self):
         return str(self.Sheet.max_row + 1)
 
-    @staticmethod
-    def get_column_via_char(char: str):
-        return ord(char.upper()) - ord('A') + 1
-
-    @staticmethod
-    def split_letter_and_number(s):
-        pattern = r'(\D+)(\d+)'
-        match = re.match(pattern, s)
-        if match:
-            letter = match.group(1)  # 捕获组1：字母部分
-            number = match.group(2)  # 捕获组2：数字部分
-            return letter, number
-        else:
-            return None, None
-
     def w_data_origin(self, row, column, data):
         self.Sheet.selected_sheet.cell(row, column, data)
 
     def w_data_char(self, string, data):
-        self.w_data_origin(*self.get_row_column(string), data)
-
-    def get_row_column(self, string):
-        char, row = self.split_letter_and_number(string)
-        column = 0
-        for index, letter in enumerate(char[::-1]):
-            column += self.get_column_via_char(letter) * pow(26, index)
-        return int(row), column
+        """
+        将字母和数字组合的字符串拆分成行和列，并写入数据
+        :param string: “B12”
+        :param data: 数据
+        :return:
+        """
+        self.w_data_origin(*get_row_column(string), data)
 
     def save(self):
         self.wb.save(self.file_name)
@@ -125,6 +150,7 @@ class ReadExcel(object):
         """
         按行读取数据，表单所有数据
         每个用例存储在一个对象中
+        注意：表格列头不能有纯数字，python无法以纯数字作为对象的属性名  也即obj.25  不可行
         :return: 返回一个列表，列表中每个元素为一个用例对象
         """
         if sheet is not None:
@@ -161,15 +187,42 @@ class ReadExcel(object):
 
         return cases
 
+    def hide_column(self, column_name: str | list[str]):
+        """
+        隐藏列
+        :param column_name: "A" | ["A", "B"]
+        :return:
+        """
+        if isinstance(column_name, list):
+            for column in column_name:
+                self.Sheet.selected_sheet.column_dimensions.group(column, hidden=True)
+        else:
+            self.Sheet.selected_sheet.column_dimensions.group(column_name, hidden=True)
+
+    def width_auto_fit(self):
+        """
+        自动调整列宽
+        :return:
+        """
+        from openpyxl.styles import alignment
+        for column in self.selected_sheet.column_dimensions.values():
+            print(column.width)
+            column.alignment = alignment.Alignment(horizontal='center', vertical='center', wrap_text=True,
+                                                   shrink_to_fit=True)
+        self.save()
+
 
 if __name__ == '__main__':
     r = ReadExcel("../SearchWords/SearchWords_v3.xlsx", sheet_name="July")
-    time.sleep(2)
+    # time.sleep(2)
     r.selected_sheet = "Sheet1"
     # print(r.Sheet)
     # print(r.latest_column_char)
     # print(r.latest_row_num)
-    # res = r.get_row_column('ZZ100')
+    # res = get_row_column('ZZ100')
     # print(res)
-    print(r.read_data_obj())
+    print(res := r.read_data_obj())
+    # r.hide_column(["A", "B"])
+    # r.hide_column("B")
+    r.width_auto_fit()
     r.save()
