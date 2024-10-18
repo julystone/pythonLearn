@@ -8,11 +8,11 @@ from pc_synchronize_pa import Synchronize
 
 
 def syn():
-    info = input_group("Sync Info", [
-        input("User No:", required=True, name="userNo"),
-        radio("来源:", options=[("App", 1, True), ("PC", 2)], required=True, name="source"),
-        radio("云端数据类型:", options=[("Self", 1), ("Setting", 2, True)], required=True, name="dataType"),
-        radio("设备名:", options=[("And", 1, True), ("iOS", 2), ("EstarX", 3)], required=True, name="device")])
+    info = input_group("获取云端同步的json文件", [
+        input("行情账号:", required=True, name="userNo"),
+        radio("云端同步来源:", options=[("移动端", 1, True), ("PC", 2)], required=True, name="source"),
+        radio("云端数据类型:", options=[("自选数据", 1), ("设置数据", 2, True)], required=True, name="dataType"),
+        radio("设备类型:", options=[("Android", 1, True), ("iOS", 2), ("EstarX", 3)], required=True, name="device")])
     user_no, source, data_type, device = info["userNo"], info["source"], info["dataType"], info["device"]
     out = Synchronize(user_no.upper(), source, data_type, device)
     out.common_get()
