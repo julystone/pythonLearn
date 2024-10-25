@@ -9,3 +9,4 @@ test_*.txt
 tempFiles
 CVMfiles_pc/
 SearchWords/
+db_setting.py

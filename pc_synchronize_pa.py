@@ -37,9 +37,7 @@ class Synchronize:
         self.dataType = dataType
         self.captcha, self.time_str = self.create_captcha()
 
-        # self.data_str = "Self" if dataType == 1 else "Setting"
         self.data_str = self.ParamDict["dataType"][dataType]
-        # self.device_str = "And" if device == 1 else "iOS"
         self.device_str = self.ParamDict["device"][device]
         self.res = None
         self.out = None

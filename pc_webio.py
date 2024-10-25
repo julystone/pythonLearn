@@ -17,7 +17,7 @@ def syn():
     out = Synchronize(user_no.upper(), source, data_type, device)
     out.common_get()
     put_file(out.name_format, out.file_bytes(), out.name_format)
-    # put_code(out.res, language='json')
+    put_code(out.out, language='json')
 
 
 def bmi():
