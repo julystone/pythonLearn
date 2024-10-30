@@ -1,4 +1,6 @@
 # encoding: utf-8
+from pc_icecream import ic
+
 
 def yield_func(n):
     for i in range(n):
@@ -8,6 +10,7 @@ def yield_func(n):
 
 
 import itertools
+
 
 def generate_orthogonal_combinations(*args):
     """
@@ -19,22 +22,15 @@ def generate_orthogonal_combinations(*args):
     combinations = list(itertools.product(*args))
     return combinations
 
+
 # 示例输入
-param1 = [1, 2, 3]       # 参数1的可能取值
+param1 = [1, 2, 3]  # 参数1的可能取值
 param2 = ['A', 'B']  # 参数2的可能取值
-param3 = [True, False] # 参数3的可能取值
+param3 = [True, False]  # 参数3的可能取值
 
 # 生成组合
 combinations = generate_orthogonal_combinations(param1, param2, param3)
 
 # 打印结果
 for idx, combo in enumerate(combinations):
-    print(f"组合 {idx + 1}: {combo}")
-
-#
-# if __name__ == '__main__':
-#     A = [1, 2, 3]
-#     B = ['cat', 'dog', 'bird', 'fish']
-#     print(list(zip(A, B)))
-#
-#     print(list(yield_func(5)))
+    ic(idx + 1, combo)
