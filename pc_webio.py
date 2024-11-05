@@ -37,4 +37,4 @@ def bmi():
 
 
 if __name__ == '__main__':
-    start_server(syn, port=8080)
+    start_server(syn, port=8000)

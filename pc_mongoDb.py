@@ -2,6 +2,7 @@
 import pymongo
 import pandas as pd
 import matplotlib.pyplot as plt
+from icecream import ic
 
 label_mapping = {
     'fast_trade_bp': '闪电下单',
@@ -14,13 +15,15 @@ label_mapping = {
     'add_favorite_bp': '添加自选',
 }
 
+
 def get_mongo_data():
     """
     获取MongoDB数据
     """
     from db_setting import mongoDB
     try:
-        client = pymongo.MongoClient(f"mongodb://{mongoDB['username']}:{mongoDB['password']}@{mongoDB['host']}:{mongoDB['port']}/")
+        client = pymongo.MongoClient(
+            f"mongodb://{mongoDB['username']}:{mongoDB['password']}@{mongoDB['host']}:{mongoDB['port']}/")
         uzi = client['uzi']
         user_tracking = uzi["user_tracking"]
         return list(user_tracking.find())
@@ -40,9 +43,12 @@ def clean_near_duplicate_data(df):
     threshold = pd.Timedelta(seconds=10)
 
     # 数据与上一条完全相同的，标记为重复记录
-    key_list = label_mapping.keys()
-    df['is_duplicate'] = (df['time_diff'] <= threshold) & (df[key_list].shift(1) == df[key_list]).all(axis=1)
-
+    label_mapping_temp = label_mapping.copy()
+    label_mapping_temp['system'] = '系统'
+    key_list = label_mapping_temp.keys()
+    ic(key_list)
+    df['is_duplicate'] = (df['time_diff'] <= threshold) & ((df[key_list].shift(1) == df[key_list]).all(axis=1))
+    ic(df[df['is_duplicate']])
     # 删除标记为重复的记录
     df_cleaned = df[~df['is_duplicate']].drop(columns=['time_diff', 'is_duplicate'])
 
