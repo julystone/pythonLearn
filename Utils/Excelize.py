@@ -106,6 +106,9 @@ def use_style(ws, style_dict: dict):
         for cell in column:
             cell.alignment = Alignment(**style_dict['alignment'])
 
+    use_style_header(ws, style_dict)
+
+def use_style_header(ws, style_dict: dict):
     for cell in ws[1]:
         # cell.font = Font(**style_dict['font'])
         cell.font = Font(size=style_dict['font']['font_size'], bold=style_dict['font']['bold'],
