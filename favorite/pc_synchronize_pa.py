@@ -23,9 +23,9 @@ class DataType(IntEnum):
 
 @unique
 class DeviceType(IntEnum):
-    And = 1
-    iOS = 2
-    EsX = 3
+    And = auto()
+    iOS = auto()
+    EsX = auto()
 
 
 class Synchronize:
@@ -33,10 +33,11 @@ class Synchronize:
         self.userNo = userNo
         self.source = source
         self.dataType = dataType
+        self.device = device
         self.captcha, self.time_str = create_captcha()
 
         # self.data_str = self.ParamDict["dataType"][dataType]
-        self.data_str = DataType(self.dataType).name
+        self.data_str = DataType(dataType).name
         self.device_str = DeviceType(device).name
         self.res = None
         self.out = None
@@ -72,15 +73,17 @@ class Synchronize:
         if self.dataType == 1:
             self.out = "Param Error：Not setting type"
             return
-        self.out = json.dumps(json.loads(self.res)["Data"]["SettingsConfig"]["EsKLineAnalysisLines"],
-                              sort_keys=True,
-                              indent=4, ensure_ascii=False)
+        # self.out = json.dumps(json.loads(self.res)["Data"]["SettingsConfig"]["EsKLineAnalysisLines"],
+        self.out = json.dumps(
+            json.loads(self.res).get("Data", {}).get("SettingsConfig", {}).get("EsKLineAnalysisLines", []),
+            sort_keys=True,
+            indent=4, ensure_ascii=False)
 
     def setting_without_header(self):
         if self.dataType == 1:
             self.out = "Param Error：Not setting type"
             return
-        data = json.loads(self.res)["Data"]["SettingsConfig"]
+        data = json.loads(self.res).get("Data", {}).get("SettingsConfig", {})
         ok = {}
         for key in data:
             if "Header" in key or "|" in key:

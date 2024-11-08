@@ -1,3 +1,4 @@
+from icecream import ic
 from pywebio.input import input, radio, input_group
 from pywebio.output import put_file, put_code, put_text,put_buttons
 from pywebio import start_server
@@ -39,10 +40,11 @@ def main():
     out = syn()
     put_text("欢迎使用云端数据同步工具")
     put_buttons([
-        ("获取完整数据", common_get(out)),
-        ("仅获取画线分析列表数据", setting_analyze_get(out)),
-        ("获取除表头外的设置数据", setting_without_header_get(out)),
-    ], onclick=lambda x: eval(x)())
+        dict(label="获取完整数据", value=lambda: common_get(out), color="success"),
+        dict(label="仅获取画线分析列表数据", value=lambda: setting_analyze_get(out), color="info"),
+        dict(label="获取排除冗余的设置点数、列表表头以外的设置数据", value=lambda: setting_without_header_get(out), color="warning"),
+    ], onclick=lambda x: x())
+    ic(out.userNo, SourceType(out.source).name, out.data_str, out.device_str, out.time_str)
 
 if __name__ == '__main__':
     start_server(main, port=8080)
