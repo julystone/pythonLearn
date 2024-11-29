@@ -15,7 +15,7 @@ def extract_text_from_pdf(file_path):
         return text
 
 
-pdf_file_path = '../SearchWords/sensitive_file.pdf'
+pdf_file_path = '../ExcelFiles/sensitive_file.pdf'
 text = extract_text_from_pdf(pdf_file_path)
 text_file = '../Utils/output.txt'
 with open(text_file, 'w', encoding='utf-8') as file1:

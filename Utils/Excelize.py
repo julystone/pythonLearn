@@ -244,7 +244,7 @@ class ReadExcel:
 
 
 if __name__ == '__main__':
-    r = ReadExcel("../SearchWords/SearchWords_v3.xlsx", sheet_name="July")
+    r = ReadExcel("../ExcelFiles/SearchWords_v3.xlsx", sheet_name="July")
     r.selected_sheet = "Sheet1"
     res = get_row_column('ZZ100')
     print(res)

@@ -10,7 +10,7 @@ def make_ice_cream(topping):
 
 def obj_read():
     from Utils.Excelize import ReadExcel
-    result = ReadExcel('../SearchWords/SearchWords_v3.xlsx').read_data_obj()
+    result = ReadExcel('../ExcelFiles/SearchWords_v3.xlsx').read_data_obj()
     return ic(result)
 
 if __name__ == '__main__':

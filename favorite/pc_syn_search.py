@@ -42,7 +42,7 @@ class Search:
 
 
 def worker():
-    OBJ = Excelize.ReadExcel("../SearchWords/SearchWords.xlsx")
+    OBJ = Excelize.ReadExcel("../ExcelFiles/SearchWords.xlsx")
     k = 2
     write_data_list = []
     for single in OBJ.read_data_obj():

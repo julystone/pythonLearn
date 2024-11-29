@@ -8,5 +8,6 @@ test_*.txt
 .idea
 tempFiles
 CVMfiles_pc/
-SearchWords/
+ExcelFiles/
 config_files/db_setting.py
+/ExcelFiles/
