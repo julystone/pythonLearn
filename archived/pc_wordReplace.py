@@ -21,26 +21,23 @@ def wordsGet(excel_path):
     ic(data2)
 
     string = data1['AllMap']
-    ic(string)
+    rename(data2, data1)
+    # ic(string)
 
-def rename(mapping, df):
-    # 假设这是您的字典
-    mapping = {
-        '旧键1': '新键1',
-        '旧键2': '新键2',
-        # ...其他映射
-    }
 
-    # 您的DataFrame
-    df = pd.DataFrame({
-        '旧键1': [1, 2, 3],
-        '旧键2': [4, 5, 6],
-        # ...其他列
-    })
+def rename(mapping_df, df):
+    mapping_df.fillna('', inplace=True)
+    mapping = dict(zip(mapping_df['CommodityId'], mapping_df['CommodityChsName_x']))
+    ic(mapping)
 
-    # 使用rename()方法进行替换
-    df_renamed = df.rename(columns=mapping)
-    return df_renamed
+    # df['SixMap'] = df['SixMap'].str.replace(mapping)
+    for key,value in mapping.items():
+        ic(key, value)
+        df['SixMap'] = df['SixMap'].str.replace(key, value)
+        # df['SixMap'] = df['SixMap'].str.replace('123', '456')
+    # df['SixMap'] = df['SixMap'].map(mapping)
+    ic(df)
+    return df
 
 
 if __name__ == '__main__':
