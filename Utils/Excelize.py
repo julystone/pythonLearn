@@ -87,7 +87,7 @@ def width_auto_fit(ws, column_widths: dict):
     """
     自动调整列宽
     :param ws: 工作表
-    :param column_widths: 列宽字典
+    :param column_widths: 列宽字典 eg {'A': 20, 'B': 30}
     """
 
     for col_letter, width in column_widths.items():
@@ -101,14 +101,29 @@ def use_style(ws, style_dict: dict):
     :param ws: 工作表
     :param style_dict: 单元格样式字典
     """
-
     for column in ws.columns:
         for cell in column:
             cell.alignment = Alignment(**style_dict['alignment'])
 
     use_style_header(ws, style_dict)
 
-def use_style_header(ws, style_dict: dict):
+def use_style_header(ws, style_dict: dict | None):
+    if not style_dict:
+        style_dict = {
+            'font':
+                {
+                    'font_size': 11,
+                    'font_color': 'FF0000',
+                    'bold': True,
+                    'align': 'center',
+                    'valign': 'vcenter',
+                },
+            'alignment':
+                {
+                    'wrap_text': True,
+                    'shrink_to_fit': True
+                }
+        }
     for cell in ws[1]:
         # cell.font = Font(**style_dict['font'])
         cell.font = Font(size=style_dict['font']['font_size'], bold=style_dict['font']['bold'],

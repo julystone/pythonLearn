@@ -9,37 +9,40 @@
 #                                \/__/
 # encoding: utf-8
 import pandas as pd
-from icecream import ic
 
 
-def wordsGet(excel_path):
-    data1 = pd.read_excel(excel_path, sheet_name='all_json')
-    data2 = pd.read_excel(excel_path, sheet_name='id_mapping')
+def words_get(path):
+    origin_df = pd.read_excel(path, sheet_name='all_json')
+    mapping_df = pd.read_excel(path, sheet_name='id_mapping')
 
-    data2 = data2[['CommodityId', 'CommodityChsName_x']]
+    mapping_df = mapping_df[['CommodityId', 'CommodityChsName_x']]
 
-    ic(data2)
+    return mapping_df, origin_df
 
-    string = data1['AllMap']
-    rename(data2, data1)
-    # ic(string)
-
-
-def rename(mapping_df, df):
+def rename(mapping_df, origin_df):
     mapping_df.fillna('', inplace=True)
     mapping = dict(zip(mapping_df['CommodityId'], mapping_df['CommodityChsName_x']))
-    ic(mapping)
 
-    # df['SixMap'] = df['SixMap'].str.replace(mapping)
     for key,value in mapping.items():
-        ic(key, value)
-        df['SixMap'] = df['SixMap'].str.replace(key, value)
-        # df['SixMap'] = df['SixMap'].str.replace('123', '456')
-    # df['SixMap'] = df['SixMap'].map(mapping)
-    ic(df)
-    return df
+        origin_df['SixMap'] = origin_df['SixMap'].str.replace('"'+key+'"', value)
+    return origin_df
 
+def format_excel(df, path):
+    from Utils.Excelize import ReadExcel, width_auto_fit, use_style_header
+
+    df.to_excel(path, sheet_name='all_json', index=False)
+    excel = ReadExcel(path)
+    width_auto_fit(excel.selected_sheet,  {'C': 15, 'G': 60})
+    use_style_header(excel.selected_sheet, style_dict=None)
+    excel.save()
+
+def main():
+    source_path = '../ExcelFiles/source.xlsx'
+    target_path = '../ExcelFiles/target.xlsx'
+
+    mapping_df, origin_df = words_get(source_path)
+    df_renamed = rename(mapping_df, origin_df)
+    format_excel(df_renamed, target_path)
 
 if __name__ == '__main__':
-    excel_path = '../ExcelFiles/new.xlsx'
-    wordsGet(excel_path)
+    main()
