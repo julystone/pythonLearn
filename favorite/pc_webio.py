@@ -16,7 +16,7 @@ def syn():
         radio("设备类型:",
               options=[("Android", DeviceType.And, True), ("iOS", DeviceType.iOS), ("EstarX", DeviceType.EsX)],
               required=True, name="device")])
-    user_no, source, data_type, device = info["userNo"], info["source"], info["dataType"], info["device"]
+    user_no, source, data_type, device = info["userNo"], info["source"], info   ["dataType"], info["device"]
     out = Synchronize(user_no.upper(), source, data_type, device)
     return out
 
