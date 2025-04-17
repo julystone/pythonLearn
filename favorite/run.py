@@ -1,4 +1,5 @@
 # encoding: utf-8
+from calendar import month
 from datetime import datetime
 
 from pc_g_calendar import monthly_calendar, GLOBAL_DICT
@@ -33,7 +34,7 @@ def save_to_excel():
 
 
 def main():
-    monthly_calendar()
+    monthly_calendar(month=5)
 
     zce_app()
     dce_app()

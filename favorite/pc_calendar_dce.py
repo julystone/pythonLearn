@@ -26,8 +26,12 @@ class CalendarShfe:
 
 
 def get_calendar_data(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        data = f.readlines()
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = f.readlines()
+    except FileNotFoundError:
+        print(f"File {filename} not found.")
+        return []
     return data
 
 
