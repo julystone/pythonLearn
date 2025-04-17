@@ -5,6 +5,7 @@ import re
 
 from pc_keymapping import mapping_handler
 from pc_g_calendar import init_data_class, GLOBAL_DICT
+from pc_calendar_zce import get_old_content
 
 CONTRACT_STRING = r'([A-Z]{1,2})([0-9]{3,4})'
 
@@ -21,15 +22,6 @@ class CalendarShfe:
     def __repr__(self):
         return f"\n In __repr__：\n{repr(self.__dict__)}"
 
-def get_old_content(container, attr_name):
-    res = container.__getattribute__(attr_name)
-    if res:
-        content = res.get("content", "")
-    else:
-        content = ""
-
-    return content
-
 
 def get_calendar_data(filename):
     res = ReadExcel(filename).read_data_obj()
@@ -44,7 +36,7 @@ def handle_calendar_data(data):
         get_listing_data(item, container)
         get_expired_data(item, container)
         get_posLimit_data(item, container)
-        get_bond_data(item, container)
+        # get_bond_data(item, container)
         # get_fee_data(item, container)  # ZCE手续费数据暂时不用
         # print(container)
 
@@ -52,17 +44,20 @@ def handle_calendar_data(data):
 def get_listing_data(item, container):
     if not item.合约挂牌:
         return
-    listing_pattern = re.compile(r'今日(.*)合约')
+    listing_pattern = re.compile(r'(.*?)上市')
     res_contract = re.findall(listing_pattern, item.合约挂牌)
     content = get_old_content(container, "listings")
-
     if res_contract:
-        res_list = res_contract[0].split('、')
         contract = re.compile(CONTRACT_STRING)
-        for i in res_list:
+        key_list = []
+        for i in res_contract:
             j = re.match(contract, i)
             if not j.group(1):
                 continue
+            if j.group(1) in key_list:
+                continue
+            else:
+                key_list.append(j.group(1))
             content += mapping_handler(j.group(1)) + "|" + j.group(2) + ",挂牌;\n"
     container.listings.update({"content": content})
 
@@ -70,49 +65,37 @@ def get_listing_data(item, container):
 def get_expired_data(item, container):
     if not item.合约到期:
         return
-    expired_pattern_contract = re.compile(r'今日是(.*?)合约')
-    expired_pattern_option = re.compile(r'今日为(.*?)C/P期权')
-
-    res_contract = re.findall(expired_pattern_contract, item.合约到期)
-    res_option = re.findall(expired_pattern_option, item.合约到期)
+    expired_pattern_contract = re.compile(r'(.*?)最后交易日')
     content = get_old_content(container, "expired")
 
+    res_contract = re.findall(expired_pattern_contract, item.合约到期)
 
     if res_contract:
-        res_list = res_contract[0].split('、')
         contract = re.compile(CONTRACT_STRING)
-        for i in res_list:
+        key_list = []
+        for i in res_contract:
             j = re.match(contract, i)
             if not j.group(1):
                 continue
+            if j.group(1) in key_list:
+                continue
+            else:
+                key_list.append(j.group(1))
             content += mapping_handler(j.group(1)) + "|" + j.group(2) + ",最后交易日;\n"
 
-    if res_option:
-        res_list = res_option[0].split('、')
-        contract = re.compile(CONTRACT_STRING)
-        for i in res_list:
-            j = re.match(contract, i)
-            if not j.group(1):
-                continue
-            content += mapping_handler(j.group(1), True) + "|" + j.group(2) + ",最后交易日;\n"
     container.expired.update({"content": content})
 
 
 def get_posLimit_data(item, container):
     if not item.限仓提示:
         return
-    posLimit_pattern = re.compile(r"从今日起，.*", re.DOTALL)
-    posLimit_pattern_contract = re.compile(CONTRACT_STRING + r"(.*?)；")
-    res = re.search(posLimit_pattern, item.限仓提示)
+    posLimit_pattern_contract = re.compile(r"今日起，" + CONTRACT_STRING + r"(.*?手)")
+    res = re.findall(posLimit_pattern_contract, item.限仓提示)
     content = get_old_content(container, "posLimit")
 
     if res:
-        new_word = res.group(0)
-        res_contract = re.findall(posLimit_pattern_contract, new_word)
-
-        if res_contract:
-            for i in res_contract:
-                content += mapping_handler(i[0]) + "|" + i[1] + "," + i[2] + ";\n"
+        for i in res:
+            content += mapping_handler(i[0]) + "|" + i[1] + "," + i[2] + ";\n"
     container.posLimit.update({"content": content})
 
 
@@ -161,12 +144,9 @@ def get_fee_data(item, container):
 
 
 def app():
-    Excel_file = '../ExcelFiles/calendar_data/zce_calendar.xlsx'
+    Excel_file = '../ExcelFiles/calendar_data/cffex_calendar.xlsx'
     res = get_calendar_data(Excel_file)
     handle_calendar_data(res)
-
-
-
 
 
 if __name__ == '__main__':
