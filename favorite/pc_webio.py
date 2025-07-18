@@ -2,7 +2,10 @@ from icecream import ic
 from pywebio.input import input, radio, input_group
 from pywebio.output import put_file, put_code, put_text,put_buttons
 from pywebio import start_server
+import os
+import sys
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from favorite.pc_synchronize_pa import Synchronize, SourceType, DataType, DeviceType
 
 
