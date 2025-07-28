@@ -48,9 +48,10 @@ def data_prepare(blocks, df_raw):
         # 添加商品名称列
         block_df['商品名称'] = name
         # 将“持仓量”列转换为数值
-        block_df['持仓量'] = pd.to_numeric(block_df['持仓量'], errors='coerce').fillna(0)
+        block_df['持仓量'] = block_df['持仓量'].str.replace(',', '').astype(float)
         block_list.append(block_df)
     return block_list
+
 
 def max_ccl_record(block_list):
     dfs = []
@@ -82,7 +83,7 @@ def max_ccl_record(block_list):
 
     final_df = pd.DataFrame(dfs)
     print(final_df)
-    final_df.to_excel("./Excel.xlsx")
+    final_df.to_excel("./Excel_shfe.xlsx")
 
 
 def app():
@@ -90,6 +91,7 @@ def app():
     blocks, df_raw = read_blocks(filename)
     block_list = data_prepare(blocks, df_raw)
     max_ccl_record(block_list)
+
 
 if __name__ == '__main__':
     app()

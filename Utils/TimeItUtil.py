@@ -11,8 +11,6 @@
 
 import timeit
 
-from anyio import sleep
-
 
 def time_it(func, *args, **kwargs):
     """
@@ -27,14 +25,17 @@ def time_it(func, *args, **kwargs):
     end_time = timeit.default_timer()
     return end_time - start_time
 
+
 if __name__ == '__main__':
     def test_func(n):
         for i in range(n):
             ...
 
+
     def test_func_2(n):
         for i in range(n):
             pass
+
 
     print(time_it(test_func, 100000))
     print(time_it(test_func_2, 100000))

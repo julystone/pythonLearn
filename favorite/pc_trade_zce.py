@@ -3,24 +3,20 @@ import pandas as pd
 
 def read_blocks(filename):
     # 步骤1：读取整个sheet（不跳过任何行）
-    df_raw = pd.read_excel(filename, header=None, skiprows=2)
+    df_raw = pd.read_excel(filename, skiprows=1, engine='xlrd')
+    df_raw = df_raw[df_raw['合约代码'] != '小计'].copy()
 
     # 步骤2：遍历行，识别每个数据块的开始和结束
     blocks = []  # 存储每个数据块的(start_index, end_index, 商品名称)
-    current_start = None
-    commodity_name = None
+    current_start = 0
 
     for idx, row in df_raw.iterrows():
-        # 检查第一列是否以“商品名称:”开头
-        if row[0].startswith('商品名称:'):
-            commodity_name = row[0].split(':')[1]  # 提取商品名称
-            current_start = idx - 1  # 数据块从下一行开始（假设数据块紧接着商品名称行）
-        elif row[0] == '小计':
-            # 遇到小计行，表示当前数据块结束
-            if current_start is not None:
-                blocks.append((current_start, idx - 1, commodity_name))  # 结束行为小计的前一行
-                current_start = None
-                commodity_name = None
+        # 检查第一列是否以“XX合计:”开头
+        if row.iloc[0].endswith('合计'):
+            commodity_name = row.iloc[0].split('合计')[0]  # 提取商品名称
+            current_end = idx - 1  # 数据块结束行为合计行的前一行
+            blocks.append((current_start, current_end, commodity_name))
+            current_start = idx + 1  # 数据块从下一行开始（假设数据块紧接着商品名称行）
 
     return blocks, df_raw
 
@@ -41,16 +37,17 @@ def data_prepare(blocks, df_raw):
     for start, end, name in blocks:
         block_df = df_raw.loc[start:end].copy()
         # 设置列标题：取第一行作为列名，然后删除该行
-        block_df.columns = block_df.iloc[0]  # 第一行作为列名
-        block_df = block_df[2:]  # 去掉第一、第二行（列名行）
+        # block_df.columns = block_df.iloc[0]  # 第一行作为列名
+        # block_df = block_df[2:]  # 去掉第一、第二行（列名行）
         # 添加期权类型列
         block_df['期权类型'] = block_df['合约代码'].apply(extract_option_type)
         # 添加商品名称列
         block_df['商品名称'] = name
         # 将“持仓量”列转换为数值
-        block_df['持仓量'] = pd.to_numeric(block_df['持仓量'], errors='coerce').fillna(0)
+        block_df['持仓量'] = block_df['持仓量'].str.replace(',', '').astype(float)
         block_list.append(block_df)
     return block_list
+
 
 def max_ccl_record(block_list):
     dfs = []
@@ -82,7 +79,7 @@ def max_ccl_record(block_list):
 
     final_df = pd.DataFrame(dfs)
     print(final_df)
-    final_df.to_excel("./Excel.xlsx")
+    final_df.to_excel("./Excel_zce.xlsx")
 
 
 def app():
@@ -90,6 +87,7 @@ def app():
     blocks, df_raw = read_blocks(filename)
     block_list = data_prepare(blocks, df_raw)
     max_ccl_record(block_list)
+
 
 if __name__ == '__main__':
     app()

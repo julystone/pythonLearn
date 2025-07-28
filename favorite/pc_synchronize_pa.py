@@ -1,10 +1,6 @@
-import random
-import string
-from datetime import datetime
+import json
 from enum import IntEnum, unique, auto
 
-import requests
-import json
 from Utils.CaptchaUtil import create_captcha
 from Utils.HttpUtil import HttpRequestNoCookie
 
