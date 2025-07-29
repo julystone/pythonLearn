@@ -1,71 +1,89 @@
 # encoding: utf-8
+from math import ceil, floor, log10
+
 
 def get_data(filename):
     from Utils.Excelize import ReadExcel
     res = ReadExcel(filename).read_data_obj()
     return res
 
+def if_interval_fits(data_range, step, ideal_intervals_min=5, ideal_intervals_max=7,  special_num=None):
+    # 计算此步长下的间隔数
+    num_intervals = data_range / step
+    flag = False
 
-def find_optimal_step(data_max, data_min, ideal_intervals_min, ideal_intervals_max, special_num=None):
+    # 处理特殊情况
+    if special_num:
+        if special_num - 1 < num_intervals < special_num:
+            print(f"遇见{data_range}特殊间隔数，使用特殊步长 {step} 匹配 {special_num} 个间隔")
+            flag = True
+    # 如果间隔数在理想范围内，这是一个候选
+    elif ideal_intervals_min <= num_intervals <= ideal_intervals_max:
+        flag = True
+
+    return flag
+
+
+def find_optimal_step(data_max, data_min, ideal_intervals_min=5, ideal_intervals_max=7, special_num=None):
     """
-    根据数据的原始最小值和最大值，计算量柱图y轴的最优刻度步长。
-
-    参数:
-    data_min (float): 数据的原始最小值
-    data_max (float): 数据的原始最大值
-
-    返回:
-    float: 推荐的最优刻度步长
+    计算最优的坐标刻度步长，返回步长、最大值对应的刻度数、最小值对应的刻度数
+    :param data_max: 数据的最大值
+    :param data_min: 数据的最小值
+    :param ideal_intervals_min: 理想的坐标刻度数的最小值, 默认为5
+    :param ideal_intervals_max: 理想的坐标刻度数的最大值，默认为7
+    :param special_num: 有特殊指定要求的坐标刻度数，默认为None
+    :return: 最优的坐标刻度步长、最大值对应的刻度数、最小值对应的刻度数
     """
-    # 1. 计算数据的原始范围
+    # 1. 计算数据大致范围
     raw_data_range = data_max - data_min
 
-    # 2. 定义首选的步长候选值 (1-2-5数量级体系)，从0.01到10000
+    # 2. 定义首选的步长候选值 (1-2-5数量级体系)，由raw_data_range确定数量级大小
     base = (1, 2, 3, 5)
-    exponents = range(-2, 6)
+    middle = int(log10(raw_data_range / 6))
+    exponents = range(middle - 1, middle + 1)
     preferred_steps = list(round(b * 10 ** exp, 2) for exp in exponents for b in base)
+    optimal_step = None
 
     # 3. 尝试使用原始数据范围
+    if data_max==0.87 and data_min==-1.15:
+        print(data_max, data_min, raw_data_range, preferred_steps)
     for step in preferred_steps:
-        # 如果步长为0，则跳过
-        if step == 0:
-            continue
+        temp = raw_data_range
+        res =  if_interval_fits(temp, step, ideal_intervals_min, ideal_intervals_max, special_num)
+        if res:
+            optimal_step = step
+            break
 
-        # 计算此步长下的间隔数
-        num_intervals = raw_data_range / step
+    # 4. 没找到合适的步长，尝试使用扩展因子
+    if not optimal_step:
+        expansion_factors = [0.1, 0.2, 0.3]
+        for factor in expansion_factors:
+            # 计算扩展后的数据范围
+            adjusted_data_range = raw_data_range * (1 + factor)
+            for step in preferred_steps:
+                res = if_interval_fits(adjusted_data_range, step, ideal_intervals_min, ideal_intervals_max, special_num)
+                if res:
+                    optimal_step = step
+                    break
 
-        # 如果间隔数在理想范围内，这是一个候选
-        if special_num:
-            if special_num-1 <= num_intervals <= special_num+1:
-                print(f"遇见特殊间隔数，使用特殊步长 {step} 匹配 {special_num} 个间隔")
-                return step
-        elif ideal_intervals_min <= num_intervals <= ideal_intervals_max:
-            return step
-
-    # 4. 尝试使用扩展因子
-    expansion_factors = [1.1, 1.2, 1.3, 1.5, 2.0]
-    for factor in expansion_factors:
-        adjusted_data_range = raw_data_range * factor
-
-        for step in preferred_steps:
-            # 如果步长为0，则跳过
-            if step == 0:
-                continue
-
-            # 计算此步长下的间隔数
-            num_intervals = adjusted_data_range / step
-
-            # 如果间隔数在理想范围内，这是一个候选
-            if special_num is not None and num_intervals == special_num:
-                return step
-            elif ideal_intervals_min <= num_intervals <= ideal_intervals_max:
-                return step
+            # 找到第一个符合条件的步长，提前退出循环
+            if optimal_step:
+                break
 
     # 6. 特殊情况处理：仍然找不到满意的步长，则返回1
-    return 1
+    if not optimal_step:
+        print("找不到合适的步长，使用1作为步长")
+        optimal_step = 1
+
+    # 计算最大值对应的刻度数
+    max_yindex = round(ceil(data_max / optimal_step) * optimal_step, 1)
+    # 计算最小值对应的刻度数
+    min_yindex = round(floor(data_min / optimal_step) * optimal_step, 1)
+
+    return optimal_step, max_yindex, min_yindex
 
 
-def app(filename):
+def test(filename):
     # 定义理想间隔数范围 (可接受5到7个)
     ideal_num_intervals_min = 5
     ideal_num_intervals_max = 7
@@ -82,17 +100,11 @@ def app(filename):
 
     mismatches = 0
     for i, (name, max_val, min_val, expected, special_num) in enumerate(data_sets):
-        optimal_step = find_optimal_step(max_val, min_val, ideal_num_intervals_min, ideal_num_intervals_max, special_num)
+        optimal_step, max_yindex, min_yindex = find_optimal_step(max_val, min_val, ideal_num_intervals_min,
+                                                                 ideal_num_intervals_max, special_num)
 
         match = "✓" if optimal_step == expected else "✗"
         mismatches += 1 if match == "✗" else 0
-
-        from math import ceil, floor
-        # 计算最大值对应的刻度数
-        max_yindex = round(ceil(max_val / optimal_step) * optimal_step, 1)
-        # 计算最小值对应的刻度数
-        min_yindex = round(floor(min_val / optimal_step) * optimal_step, 1)
-        # 计算刻度数差值
 
         table.add_row([name, max_val, min_val, max_yindex, min_yindex, expected, optimal_step, match])
 
@@ -103,4 +115,4 @@ def app(filename):
 
 if __name__ == "__main__":
     Excel_file = "../ExcelFiles/step_data.xlsx"
-    app(Excel_file)
+    test(Excel_file)

@@ -82,15 +82,29 @@ def max_ccl_record(block_list):
                 dfs.append(placeholder)
 
     final_df = pd.DataFrame(dfs)
-    print(final_df)
-    final_df.to_excel("./Excel_shfe.xlsx")
+    # print(final_df)
+
+    return final_df
+    # final_df.to_excel("./Excel_shfe.xlsx")
+
+
+def compare_df(df1, df2):
+    # 合并两个DataFrame, 比较持仓量与国君持仓量差异
+    merged_df = pd.merge(df1, df2, on=['商品名称', '期权类型'], how='inner')
+    merged_df['diff'] = merged_df['持仓量'] - merged_df['国君持仓量'].astype(float)
+    # merged_df['diff'] = merged_df['diff'].map({0: '一致'})
+    print(merged_df)
+    merged_df.to_excel("./Excel_shfe_diff.xlsx")
 
 
 def app():
     filename = "../ExcelFiles/shfe期权all.xlsx"
     blocks, df_raw = read_blocks(filename)
     block_list = data_prepare(blocks, df_raw)
-    max_ccl_record(block_list)
+    final_df = max_ccl_record(block_list)
+    expected_df = pd.read_excel("../ExcelFiles/Excel_shfe_expected.xlsx")
+    compare_df(final_df, expected_df)
+
 
 
 if __name__ == '__main__':
