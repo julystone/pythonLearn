@@ -1,0 +1,13 @@
+[project]
+name = "pythonlearn"
+version = "0.1.0"
+description = "July's Python learning project"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "baostock>=0.8.9",
+    "langextract>=1.0.9",
+    "openpyxl>=3.1.5",
+    "prettytable>=3.16.0",
+    "pyecharts>=2.0.8",
+]

@@ -45,8 +45,6 @@ def find_optimal_step(data_max, data_min, ideal_intervals_min=5, ideal_intervals
     optimal_step = None
 
     # 3. 尝试使用原始数据范围
-    if data_max==0.87 and data_min==-1.15:
-        print(data_max, data_min, raw_data_range, preferred_steps)
     for step in preferred_steps:
         temp = raw_data_range
         res =  if_interval_fits(temp, step, ideal_intervals_min, ideal_intervals_max, special_num)
@@ -70,7 +68,7 @@ def find_optimal_step(data_max, data_min, ideal_intervals_min=5, ideal_intervals
             if optimal_step:
                 break
 
-    # 6. 特殊情况处理：仍然找不到满意的步长，则返回1
+    # 6. 特殊情况处理：仍然找不到满意的步长uv，则返回1
     if not optimal_step:
         print("找不到合适的步长，使用1作为步长")
         optimal_step = 1
