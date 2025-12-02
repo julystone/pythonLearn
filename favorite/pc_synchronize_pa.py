@@ -9,6 +9,7 @@ from Utils.HttpUtil import HttpRequestNoCookie
 class SourceType(IntEnum):
     App = auto()
     PC = auto()
+    CollectData = auto()
 
 
 @unique
@@ -87,6 +88,17 @@ class Synchronize:
             ok[key] = data[key]
         self.out = json.dumps(ok, sort_keys=True, indent=4, ensure_ascii=False)
 
+    def collect_data_get(self):
+        if self.source != 3:
+            self.out = "not collect data"
+            return
+        # self.out = json.dumps(json.loads(self.res)["Data"]["SettingsConfig"]["EsKLineAnalysisLines"],
+        self.out = json.dumps(
+            json.loads(self.res).get("Data", {}).get("SettingsConfig", {}).get("EsKLineAnalysisLines", []),
+            sort_keys=True,
+            indent=4, ensure_ascii=False)
+
+
     def write_file(self):
         with open(f'../tempFiles/{self.name_format}', mode='w+') as f:
             f.write(self.out)
@@ -101,7 +113,7 @@ class Synchronize:
 
 if __name__ == '__main__':
     userNo = "ESTEST015"
-    source = SourceType.App  # 1:App, 2:PC
+    source = SourceType.CollectData  # 1:App, 2:PC, 3:CollectData
     dataType = DataType.Setting  # 1:Self,2:Setting
 
     device = DeviceType.And  # 1:And, 2:iOS, 3:EsX

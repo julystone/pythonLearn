@@ -1,8 +1,6 @@
 # encoding: utf-8
 
 import langextract as lx
-
-import langextract as lx
 import textwrap
 
 # 1. Define the prompt and extraction rules
@@ -44,7 +42,7 @@ result = lx.extract(
     prompt_description=prompt,
     examples=examples,
     model_id="gemini-2.5-flash",
-    api_key="YOUR_API_KEY_HERE",
+    api_key="sk-ncynwnubqwrxrayajpyalntslydfumgiarvbbepcdnbljvid",
 )
 
 # Save the results to a JSONL file

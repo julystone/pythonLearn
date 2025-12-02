@@ -5,9 +5,18 @@ description = "July's Python learning project"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "backtrader>=1.9.78.123",
     "baostock>=0.8.9",
+    "drissionpage>=4.1.1.2",
+    "efinance>=0.5.5.2",
+    "gm>=3.0.179",
     "langextract>=1.0.9",
+    "matplotlib>=3.10.7",
+    "openai>=1.109.1",
     "openpyxl>=3.1.5",
+    "pandas-datareader>=0.10.0",
     "prettytable>=3.16.0",
     "pyecharts>=2.0.8",
+    "selenium>=4.38.0",
+    "yfinance>=0.2.66",
 ]

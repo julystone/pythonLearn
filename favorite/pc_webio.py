@@ -12,14 +12,14 @@ from favorite.pc_synchronize_pa import Synchronize, SourceType, DataType, Device
 def syn():
     info = input_group("获取云端同步的json文件", [
         input("行情账号:", required=True, name="userNo"),
-        radio("云端同步来源:", options=[("移动端", SourceType.App, True), ("PC", SourceType.PC)], required=True,
+        radio("云端同步来源:", options=[("移动端", SourceType.App, True), ("PC", SourceType.PC), ("收藏内容", SourceType.CollectData)], required=True,
               name="source"),
         radio("云端数据类型:", options=[("自选数据", DataType.Self), ("设置数据", DataType.Setting, True)],
               required=True, name="dataType"),
         radio("设备类型:",
               options=[("Android", DeviceType.And, True), ("iOS", DeviceType.iOS), ("EstarX", DeviceType.EsX)],
               required=True, name="device")])
-    user_no, source, data_type, device = info["userNo"], info["source"], info   ["dataType"], info["device"]
+    user_no, source, data_type, device = info["userNo"], info["source"], info["dataType"], info["device"]
     out = Synchronize(user_no.upper(), source, data_type, device)
     return out
 
@@ -41,6 +41,11 @@ def setting_without_header_get(out):
     put_file(out.name_format, out.file_bytes(), out.name_format)
     put_code(out.out, language='json')
 
+def collect_data_get(out):
+    out.collect_data_get()
+    put_file(out.name_format, out.file_bytes(), out.name_format)
+    put_code(out.out, language='json')
+
 
 def main():
     out = syn()
@@ -50,6 +55,8 @@ def main():
         dict(label="仅获取画线分析列表数据", value=lambda: setting_analyze_get(out), color="info"),
         dict(label="获取排除冗余的设置点数、列表表头以外的设置数据", value=lambda: setting_without_header_get(out),
              color="warning"),
+        dict(label="获取收藏内容", value=lambda: collect_data_get(out),
+             color="info"),
     ], onclick=lambda x: x())
     ic(out.userNo, SourceType(out.source).name, out.data_str, out.device_str, out.time_str)
 
