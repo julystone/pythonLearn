@@ -25,12 +25,37 @@ def main():
         "犀角鸟": {"光"},
         "丹雅鬃": {"火"},
     }
+
+    spirits_tree = {
+        "小翼龙": {"龙", "翼"},
+        "噼啪鸟": {"电", "翼"},
+        "水一水蓝蓝": {"水"},
+        "草二松仔": {"草", "武"},
+        "深蓝鲸": {"水"},
+        "裘洛": {"毒"},
+        "多西": {"钢", "地"},
+        "咔咔羽毛": {"翼", "普"},
+        "伊雷龙": {"龙"},
+        "厉毒小萝": {"毒", "恶"},
+        "墨鱿士": {"幽"},
+        "布鲁斯": {"冰"},
+        "小黑猫": {"普"},
+        "可爱猿": {"火"},
+        "圣剑侍从": {"钢"},
+        "仪使者": {"地", "幻"},
+        "罗隐": {"地"},
+        "春团": {"草"},
+    }
     spirits_new = {}
     for key, value in spirits.items():
         if key in ["月牙雪熊", "燃薪虫", "空空颅", "粉星仔", "窃光蚊", "双灯鱼", "贝瑟", "粉粉星"]:
-            spirits_new[key] = {"属性": value, "稀有性": "稀有"}
+            # spirits_new[key] = {"属性": value, "稀有性": "稀有", "赛季": "本赛季"}
+            pass
         else:
-            spirits_new[key] = {"属性": value, "稀有性": "非稀有"}
+            spirits_new[key] = {"属性": value, "稀有性": "非稀有", "赛季": "本赛季"}
+
+    for key, value in spirits_tree.items():
+        spirits_new[key] = {"属性": value, "稀有性": "非稀有", "赛季": "非本赛季"}
 
     # print(spirits_new)
     spirits = spirits_new
@@ -50,101 +75,98 @@ def main():
     }
 
     max_habitat_size = 2  # 容量约束（≤2）
-    prioritize_rare_type = "非稀有"  # 稀有性优先（软目标）
-
+    prioritize_rare_type = "非稀有"  # 稀有性优先类型（软目标）
     # ====================== 2. 计算所有精灵对的相宜规则计数 ======================
     spirit_list = list(spirits.keys())
-    comp_count = defaultdict(dict)  # comp_count[u][v] = 精灵u与v的相宜规则计数
-    
+    comp_count = defaultdict(dict)  # comp_count[u][v] = 计数
+
     for i in range(len(spirit_list)):
         u = spirit_list[i]
         u_attrs = spirits[u]["属性"]
-        for j in range(i+1, len(spirit_list)):
+        for j in range(i + 1, len(spirit_list)):
             v = spirit_list[j]
             v_attrs = spirits[v]["属性"]
-            
-            # 计算相宜规则计数（核心修改：从布尔值到整数计数）
+
             count = 0
             for s in u_attrs:
                 for t in v_attrs:
-                    # 条件1：同属性相宜（计数+1）
-                    if s == t:
-                        count += 1
-                    # 条件2：不同属性符合规则（计数+1）
-                    elif frozenset({s, t}) in compatibility_rules:
+                    if s == t or frozenset({s, t}) in compatibility_rules:
                         count += 1
             comp_count[u][v] = count
-            comp_count[v][u] = count  # 对称矩阵
+            comp_count[v][u] = count
 
-    # ====================== 3. 贪心配对（优先高计数、同稀有性） ======================
-    # 步骤1：节点排序（非稀有优先，再按“潜在最大计数”降序）
+    # ====================== 3. 贪心配对（新增“本赛季优先”） ======================
+    # 节点排序：本赛季→非本赛季 → 非稀有→稀有 → 高计数→低计数
     def sort_key(spirit):
+        season_priority = 0 if spirits[spirit]["赛季"] == "本赛季" else 1
         rare_priority = 0 if spirits[spirit]["稀有性"] == prioritize_rare_type else 1
-        # 潜在最大计数：该精灵与其他所有精灵的最大计数
         max_count = max(comp_count[spirit].values()) if comp_count[spirit] else 0
-        return (rare_priority, -max_count)  # 非稀有在前，高计数在前
-    
+        return (season_priority, rare_priority, -max_count)
+
     sorted_spirits = sorted(spirit_list, key=sort_key)
-    
-    # 步骤2：初始化配对状态
-    matched = set()  # 已配对精灵
-    habitats = []    # 栖息地列表（每个元素为[精灵1, 精灵2]或[精灵]）
-    
-    # 步骤3：贪心配对（优先高计数对）
+    matched = set()
+    habitats = []
+
     for i in range(len(sorted_spirits)):
         u = sorted_spirits[i]
         if u in matched:
-            continue  # 已配对，跳过
-        
-        # 寻找最佳伙伴：同稀有性→高计数优先；无则异稀有性→高计数优先
+            continue
+
         best_partner = None
+        best_priority = None
         best_count = -1
-        for j in range(i+1, len(sorted_spirits)):
+
+        # 寻找最佳伙伴（同赛季→同稀有性→高计数）
+        for j in range(i + 1, len(sorted_spirits)):
             v = sorted_spirits[j]
             if v in matched:
-                continue  # 伙伴已配对，跳过
-            
-            # 计算当前对的计数
+                continue
+
             current_count = comp_count[u][v]
-            # 优先级：同稀有性 > 高计数
+            if current_count == 0:
+                continue  # 不相宜，跳过
+
+            is_same_season = (spirits[u]["赛季"] == spirits[v]["赛季"])
             is_same_rare = (spirits[u]["稀有性"] == spirits[v]["稀有性"])
-            # 若同稀有性且计数更高，或异稀有性但计数更高且无同稀有性选项
-            if (is_same_rare and current_count > best_count) or (not is_same_rare and current_count > best_count):
+            priority = (not is_same_season, not is_same_rare, -current_count)
+
+            if best_partner is None or priority < best_priority:
                 best_partner = v
+                best_priority = priority
                 best_count = current_count
-        
-        # 配对成功（若找到伙伴且计数>0，或必须配对）
-        if best_partner is not None and (best_count > 0 or len(matched) % 2 == 1):  # 允许计数0的配对（若无其他选择）
+
+        # 配对或单只成栖息地
+        if best_partner is not None:
             habitats.append([u, best_partner])
             matched.add(u)
             matched.add(best_partner)
         else:
-            # 无合适伙伴，单只成栖息地
             habitats.append([u])
             matched.add(u)
 
-    # ====================== 4. 输出结果（含相宜规则计数） ======================
-    total_count = 0  # 所有栖息地的相宜规则计数之和
+    # ====================== 4. 输出结果（含赛季分布） ======================
+    total_count = 0
     print(f"=== 栖息地数量：{len(habitats)}（容量≤{max_habitat_size}） ===")
-    print(f"=== 优先聚集类型：{prioritize_rare_type} ===")
-    
+    print(f"=== 优先规则：本赛季配对＞{prioritize_rare_type}聚集＞高相宜计数 ===")
+
     for idx, members in enumerate(habitats, 1):
         if len(members) == 2:
             u, v = members
             count = comp_count[u][v]
             total_count += count
+            season_types = f"{spirits[u]['赛季']}+{spirits[v]['赛季']}"
             rare_types = f"{spirits[u]['稀有性']}+{spirits[v]['稀有性']}"
-            print(f"\n--- 栖息地{idx}（2只精灵，相宜规则计数：{count}，稀有性：{rare_types}） ---")
+            print(f"\n--- 栖息地{idx}（2只精灵，计数：{count}，赛季：{season_types}，稀有性：{rare_types}） ---")
             print(f"精灵列表：{u}（{spirits[u]['属性']}）、{v}（{spirits[v]['属性']}）")
-            print(f"符合的规则：{[frozenset({s,t}) for s in spirits[u]['属性'] for t in spirits[v]['属性'] if s==t or frozenset({s,t}) in compatibility_rules]}")
         else:
             member = members[0]
-            print(f"\n--- 栖息地{idx}（1只精灵，稀有性：{spirits[member]['稀有性']}） ---")
+            print(f"\n--- 栖息地{idx}（1只精灵，赛季：{spirits[member]['赛季']}，稀有性：{spirits[member]['稀有性']}） ---")
             print(f"精灵列表：{member}（{spirits[member]['属性']}）")
-    
-    print(f"\n=== 总相宜规则计数：{total_count}（所有栖息地的规则符合数之和） ===")
+
+    print(f"\n=== 总相宜规则计数：{total_count} ===")
 
     return habitats, total_count
+
 
 if __name__ == "__main__":
     main()
