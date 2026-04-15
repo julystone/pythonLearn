@@ -95,5 +95,5 @@ def control_data(filename):
 
 
 if __name__ == '__main__':
-    Excel_file = r"C:\Users\july4\PycharmProjects\pythonLearn\ExcelFiles\wechat_link_test.xlsx"
+    Excel_file = r"C:\Users\july4\PycharmProjects\pythonLearn\ExcelFiles\wechat_link.xlsx"
     control_data(Excel_file)
